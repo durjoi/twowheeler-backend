@@ -210,6 +210,20 @@ async function run() {
 
         });
 
+
+
+
+
+        // Add new user
+        app.post('/users', async(req, res) => {
+            const newUser = req.body;
+            console.log(req.body);
+            const result = await userCollection.insertOne(newUser);
+            console.log(`A document was inserted in Event Collection with the _id: ${result.insertedId}`);
+
+            res.send(result.insertedId);
+        });
+
     } finally {
         // await client.close();
     }
