@@ -32,21 +32,39 @@ async function run() {
         const bookingsCollection = database.collection("bookings");
 
         // Get All the bicycles
-        app.get('/bicycles', async(req, res) => {
+        app.get('/bicycles', async (req, res) => {
 
-            const bicycles = await bicycleCollection.find({})
+            if(req.query?.limit) {
+                const limit = parseInt(req.query.limit);
+                const bicycles = await bicycleCollection.find({}).limit(limit);
 
-            if (await bicycles.count() == 0) {
-                console.log('No Result Found');
-            }
-
-            bicycles.toArray(function(err, result) {
-                if (err) {
-                    res.send(err);
-                } else {
-                    res.send(JSON.stringify(result));
+                if (await bicycles.count() == 0) {
+                    console.log('No Result Found');
                 }
-            });
+
+                bicycles.toArray(function(err, result) {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                        res.send(JSON.stringify(result));
+                    }
+                });
+            } else {
+                const bicycles = await bicycleCollection.find({})
+
+                if (await bicycles.count() == 0) {
+                    console.log('No Result Found');
+                }
+
+                bicycles.toArray(function(err, result) {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                        res.send(JSON.stringify(result));
+                    }
+                });
+            }
+            
 
         });
 
