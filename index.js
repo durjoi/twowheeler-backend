@@ -27,9 +27,8 @@ async function run() {
         await client.connect();
         const database = client.db("twowheelers");
         const bicycleCollection = database.collection("bicycles");
-        const orderCollection = database.collection("order");
         const userCollection = database.collection("user");
-        const bookingsCollection = database.collection("bookings");
+        const ordersCollection = database.collection("orders");
 
         // Get All the bicycles
         app.get('/bicycles', async (req, res) => {
@@ -122,15 +121,15 @@ async function run() {
 
 
 
-        // Get all the Bookings
-        app.get('/bookings', async(req, res) => {
-            const bookings = await bookingsCollection.find({});
+        // Get all the orders
+        app.get('/orders', async(req, res) => {
+            const orders = await ordersCollection.find({});
 
-            if (await bookings.count() == 0) {
+            if (await orders.count() == 0) {
                 console.log('No Result Found');
             }
 
-            bookings.toArray(function(err, result) {
+            orders.toArray(function(err, result) {
                 if (err) {
                     res.send(err);
                 } else {
@@ -140,22 +139,25 @@ async function run() {
         });
 
         // Insert new Booking
-        app.post('/bookings', async(req, res) => {
-            const newEvent = req.body;
-            const result = await bookingsCollection.insertOne(newEvent);
+        app.post('/orders', async(req, res) => {
+            const newOrder = req.body;
+
+            console.log(req.body);
+
+            const result = await ordersCollection.insertOne(newOrder);
             console.log(`A document was inserted in Booking Collection with the _id: ${result.insertedId}`);
 
             res.send(result.insertedId);
         });
 
         // delete Booking by id
-        app.delete('/bookings/:id', async(req, res) => {
+        app.delete('/orders/:id', async(req, res) => {
 
             const id = ObjectId(req.params.id);
 
             const query = { _id: id };
 
-            const booking = await bookingsCollection.deleteOne(query);
+            const booking = await ordersCollection.deleteOne(query);
 
             if (booking.deletedCount === 1) {
                 console.log("Successfully deleted one document.");
@@ -168,20 +170,21 @@ async function run() {
         });
 
         // Update status by id
-        app.put('/bookings/:id', async(req, res) => {
+        app.put('/orders/:id', async(req, res) => {
 
             const id = ObjectId(req.params.id);
+            const status = req.query.status;
 
             const query = { _id: id };
 
             // create a document that sets the plot of the movie
             const updateDoc = {
                 $set: {
-                    status: "Approved"
+                    status: status
                 },
             };
 
-            const booking = await bookingsCollection.updateOne(query, updateDoc);
+            const booking = await ordersCollection.updateOne(query, updateDoc);
 
 
 
@@ -190,17 +193,17 @@ async function run() {
         });
 
 
-        // Get Bookings by User Id
-        app.get('/bookings/:userid', async(req, res) => {
+        // Get orders by User Id
+        app.get('/orders/:userid', async(req, res) => {
             const query = { user_id: req.params.userid };
 
-            const bookings = await bookingsCollection.find(query);
+            const orders = await ordersCollection.find(query);
 
-            if (await bookings.count() == 0) {
+            if (await orders.count() == 0) {
                 console.log('No Result Found');
             }
 
-            bookings.toArray(function(err, result) {
+            orders.toArray(function(err, result) {
                 if (err) {
                     res.send(err);
                 } else {
