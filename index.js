@@ -29,6 +29,7 @@ async function run() {
         const bicycleCollection = database.collection("bicycles");
         const userCollection = database.collection("user");
         const ordersCollection = database.collection("orders");
+        const reviewsCollection = database.collection("reviews");
 
         // Get All the bicycles
         app.get('/bicycles', async (req, res) => {
@@ -271,6 +272,36 @@ async function run() {
             // console.log(`A document was inserted in Event Collection with the _id: ${result.insertedId}`);
 
             res.send(result);
+        });
+
+
+        // Get all the Review
+        app.get('/reviews', async(req, res) => {
+            const review = await reviewsCollection.find({});
+
+            if (await review.count() == 0) {
+                console.log('No Result Found');
+            }
+
+            review.toArray(function(err, result) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.send(JSON.stringify(result));
+                }
+            });
+        });
+
+        // Insert new Review
+        app.post('/reviews', async(req, res) => {
+            const newReview = req.body;
+
+            console.log(req.body);
+
+            const result = await reviewsCollection.insertOne(newReview);
+            console.log(`A document was inserted in Review Collection with the _id: ${result.insertedId}`);
+
+            res.send(result.insertedId);
         });
 
     } finally {
