@@ -115,7 +115,7 @@ async function run() {
         app.post('/bicycles', async(req, res) => {
             const newEvent = req.body;
             const result = await bicycleCollection.insertOne(newEvent);
-            console.log(`A document was inserted in Event Collection with the _id: ${result.insertedId}`);
+            console.log(`A document was inserted in Bicycle Collection with the _id: ${result.insertedId}`);
 
             res.send(result.insertedId);
         });
@@ -212,6 +212,24 @@ async function run() {
 
 
 
+        // Get Event by id
+        app.get('/users', async(req, res) => {
+            
+            const email = req.query.email;
+
+            const query = { email: email };
+
+            const user = await userCollection.find(query);
+
+            user.toArray(function(err, result) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.send(JSON.stringify(result));
+                }
+            });
+
+        });
 
 
         // Add new user
@@ -222,6 +240,34 @@ async function run() {
             console.log(`A document was inserted in Event Collection with the _id: ${result.insertedId}`);
 
             res.send(result.insertedId);
+        });
+
+        // Add new user
+        app.post('/user/admin', async(req, res) => {
+            const userEmail = req.body.email;
+
+            console.log(userEmail);
+
+            const filter = { email: userEmail };
+
+            const updateDoc = {
+                $set: {
+                  role: "Admin"
+                },
+              };
+
+            const result = await userCollection.updateOne(filter, updateDoc);
+
+            console.log(
+                `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`,
+              );
+
+
+            // console.log(req.body);
+            // const result = await userCollection.insertOne(newUser);
+            // console.log(`A document was inserted in Event Collection with the _id: ${result.insertedId}`);
+
+            res.send(result);
         });
 
     } finally {
