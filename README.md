@@ -1,4 +1,4 @@
-# 2heeler's Backend - A Bicycle Shop
+# 2wheeler's Backend - A Bicycle Shop
 
 This web application is build with React js, Express js & MongoDB
 
